@@ -15,6 +15,9 @@ app.use(bodyParser.json())
 // Importar rutas
 let appRoutes = require('./routes/app');
 let usuarioRoutes = require('./routes/usuario');
+let hospitalRoutes = require('./routes/hospital');
+let medicoRoutes = require('./routes/medico');
+let busquedaRoutes = require('./routes/busqueda');
 let loginRoutes = require('./routes/login');
 
 // Conexión base de datos
@@ -29,6 +32,9 @@ db.once('open', function () {
 });
 
 app.use('/usuario', usuarioRoutes);
+app.use('/hospital', hospitalRoutes);
+app.use('/medico', medicoRoutes);
+app.use('/busqueda', busquedaRoutes);
 app.use('/login', loginRoutes);
 app.use('/', appRoutes);
 
