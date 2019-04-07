@@ -38,34 +38,34 @@ app.get('/coleccion/:tabla/:busqueda', (req, res, next) => {
     var busqueda = req.params.busqueda;
     var tabla = req.params.tabla;
     var regex = new RegExp(busqueda, 'i');
+    var promesa;
 
-    if (tabla === 'hospitales') {
-        buscarHospitales(busqueda, regex).then(hospitales => {
-            res.status(200).json({
-                ok: true,
-                hospitales: hospitales,
-            });
-        })
-    } else if (tabla === 'medicos') {
-        buscarMedicos(busqueda, regex).then(medicos => {
-            res.status(200).json({
-                ok: true,
-                medicos: medicos,
-            });
-        })
-    } else if (tabla === 'usuarios') {
-        buscarMedicos(busqueda, regex).then(usuarios => {
-            res.status(200).json({
-                ok: true,
-                usuarios: usuarios,
-            });
-        })
-    } else {
-        res.status(500).json({
-            ok: false,
-            msg: 'no existe',
-        });
+    switch (tabla) {
+        case 'hospitales':
+            promesa = buscarHospitales(busqueda, regex);
+            break;
+        case 'medicos':
+            promesa = buscarMedicos(busqueda, regex);
+            break;
+        case 'usuarios':
+            promesa = buscarUsuarios(busqueda, regex);
+            break;
+        default:
+            return res.status(400).json({
+                ok: false,
+                mensaje: 'El tipo de busqueda no se encuentra',
+                error: {
+                    message: 'Tipo de tabla/coleccion no válido'
+                }
+            })
     }
+
+    promesa.then(data => {
+        res.status(200).json({
+            ok: true,
+            [tabla]: data,
+        });
+    })
 
 });
 

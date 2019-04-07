@@ -14,11 +14,13 @@ app.use(bodyParser.json())
 
 // Importar rutas
 let appRoutes = require('./routes/app');
+let loginRoutes = require('./routes/login');
 let usuarioRoutes = require('./routes/usuario');
 let hospitalRoutes = require('./routes/hospital');
 let medicoRoutes = require('./routes/medico');
 let busquedaRoutes = require('./routes/busqueda');
-let loginRoutes = require('./routes/login');
+let uploadRoutes = require('./routes/upload');
+let imagenesRoutes = require('./routes/imagenes');
 
 // Conexión base de datos
 mongoose.connect('mongodb://localhost/hospitalDB', {
@@ -31,10 +33,13 @@ db.once('open', function () {
   console.log('Base de datos: \x1b[32m%s\x1b[0m', 'online');
 });
 
+// Rutas
 app.use('/usuario', usuarioRoutes);
 app.use('/hospital', hospitalRoutes);
 app.use('/medico', medicoRoutes);
 app.use('/busqueda', busquedaRoutes);
+app.use('/upload', uploadRoutes);
+app.use('/img', imagenesRoutes);
 app.use('/login', loginRoutes);
 app.use('/', appRoutes);
 
