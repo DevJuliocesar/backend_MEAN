@@ -24,7 +24,9 @@ let imagenesRoutes = require('./routes/imagenes');
 
 // Conexión base de datos
 mongoose.connect('mongodb://localhost/hospitalDB', {
-  useNewUrlParser: true
+  useNewUrlParser: true,
+  useCreateIndex: true,
+  useFindAndModify: false
 });
 
 var db = mongoose.connection;
