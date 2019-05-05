@@ -1,0 +1,19 @@
+{
+  "scripts": {
+    "dev": "lite-server"
+  },
+  "name": "google-sign-in",
+  "version": "1.0.0",
+  "main": "index.js",
+
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "lite-server": "^2.4.0"
+
+  },
+  "dependencies": {
+    "firebaseui": "^3.5.2"
+  }
+}
