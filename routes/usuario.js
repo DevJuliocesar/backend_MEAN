@@ -1,7 +1,7 @@
 var express = require('express');
 var bcrypt = require('bcryptjs');
 
-var mdAuth = require('../middlewares/autentication')
+var mdAuth = require('../middlewares/autentication');
 
 var app = express();
 
@@ -12,35 +12,31 @@ var Usuario = require('../models/usuario');
 // ================================================
 
 app.get('/', (req, res, next) => {
-
   var skip = Number(req.query.skip) || 0;
 
-  Usuario.find({}, 'nombre email role img')
+  Usuario.find({}, 'nombre email role img google')
     .sort({
       role: 1
     })
     .skip(skip)
-    .limit(10)
-    .exec(
-      (err, usuarios) => {
-        if (err) {
-          return res.status(500).json({
-            ok: false,
-            mensaje: 'Error cargando usuarios',
-            errors: err
-          });
-        }
+    .limit(5)
+    .exec((err, usuarios) => {
+      if (err) {
+        return res.status(500).json({
+          ok: false,
+          mensaje: 'Error cargando usuarios',
+          errors: err
+        });
+      }
 
-        Usuario.countDocuments((err, count) => {
-          res.status(200).json({
-            ok: true,
-            usuarios: usuarios,
-            total: count
-          });
-
-        })
-      })
-
+      Usuario.countDocuments((err, count) => {
+        res.status(200).json({
+          ok: true,
+          usuarios: usuarios,
+          total: count
+        });
+      });
+    });
 });
 
 // ================================================
@@ -48,40 +44,44 @@ app.get('/', (req, res, next) => {
 // ================================================
 
 app.put('/:id', mdAuth.verificarToken, (req, res) => {
-
   var id = req.params.id;
   var body = req.body;
 
-  Usuario.findOneAndUpdate({
-    _id: id
-  }, {
-    nombre: body.nombre,
-    email: body.email
-  }, (err, usuario) => {
-    if (err) {
-      return res.status(500).json({
-        ok: false,
-        mensaje: 'Error al actualizar usuario',
-        errors: err
+  Usuario.findOneAndUpdate(
+    {
+      _id: id
+    },
+    {
+      nombre: body.nombre,
+      email: body.email,
+      role: body.role
+    },
+    { new: true },
+    (err, usuarioDB) => {
+      if (err) {
+        return res.status(500).json({
+          ok: false,
+          mensaje: 'Error al actualizar usuario',
+          errors: err
+        });
+      }
+
+      if (!usuarioDB) {
+        return res.status(400).json({
+          ok: false,
+          mensaje: `El usuario con el id ${id} no existe`,
+          errors: {
+            message: 'No existe un usuario con ese ID'
+          }
+        });
+      }
+
+      res.status(200).json({
+        ok: true,
+        usuario: usuarioDB
       });
     }
-
-    if (!usuario) {
-      return res.status(400).json({
-        ok: false,
-        mensaje: `El usuario con el id ${id} no existe`,
-        errors: {
-          message: 'No existe un usuario con ese ID'
-        }
-      });
-    }
-
-    res.status(200).json({
-      ok: true,
-      usuario: usuario
-    });
-  })
-
+  );
 });
 
 // ================================================
@@ -89,7 +89,6 @@ app.put('/:id', mdAuth.verificarToken, (req, res) => {
 // ================================================
 
 app.post('/', (req, res) => {
-
   const body = req.body;
 
   const usuario = new Usuario({
@@ -115,7 +114,6 @@ app.post('/', (req, res) => {
       usuarioToken: req.usuario
     });
   });
-
 });
 
 // ================================================
@@ -147,9 +145,8 @@ app.delete('/:id', mdAuth.verificarToken, (req, res) => {
     res.status(200).json({
       ok: true,
       usuario: usuarioBorrado
-    })
+    });
   });
 });
-
 
 module.exports = app;
